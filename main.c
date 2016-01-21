@@ -20,13 +20,12 @@ const char *vertex_shader =
 
 const char *fragment_shader =
 "#version 150\n"
-	//"in vec2 mouse_position;"
-"uniform int width;"
-"uniform int height;"
+"uniform vec2 mouse_position;"
+"uniform ivec2 buffer_size;"
 "out vec4 out_color;"
 
 "void main() {"
-"    out_color = vec4(1.0, gl_FragCoord.x / width, 1.0, 1.0);"
+"    out_color = vec4(1.0, gl_FragCoord.x / buffer_size.x, mouse_position.y, 1.0);"
 "}";
 
 GLuint compile_shader(const char *src, GLenum shader_type);
@@ -70,12 +69,19 @@ int main()
    	// Pass the frame buffer size to the fragment shader
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
-	GLint width_handle = glGetUniformLocation(program, "width");
-	glUniform1i(width_handle, width);
+	GLint size_handle = glGetUniformLocation(program, "buffer_size");
+   	glUniform2i(size_handle, width, height);
+
+	GLint cursor_handle = glGetUniformLocation(program, "mouse_position");
 	
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
     {
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		printf("%.2f\n", ypos);
+		glUniform2f(cursor_handle, xpos / 640, ypos / 480);
+		
 		// Draw our full screen quad
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -92,18 +98,19 @@ int main()
 
 GLFWwindow *setup_window(int width, int height, const char *title)
 {
-	/* Make sure we run at least OpenGL 3.2 */
+	// Make sure we run at least OpenGL 3.2
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
  	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
  	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
  	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
-    /* Create a windowed mode window and its OpenGL context */
+    // Create a windowed mode window and its OpenGL context
     GLFWwindow *window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (!window) {
         glfwTerminate();
         exit(1);
     }
+	
 	return window;
 }
 
