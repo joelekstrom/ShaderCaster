@@ -1,5 +1,4 @@
-#import <stdio.h>
-#import <GLFW/glfw3.h>
+#import "glutils.h"
 #import <stdlib.h>
 
 GLfloat vertices[] = {
@@ -32,10 +31,6 @@ const char *fragment_shader =
 "    out_color = vec4(1.0, rel_fragcoord.x, 1.0 - mouse_distance * 4.0, 1.0);"
 "}";
 
-GLuint compile_shader(const char *src, GLenum shader_type);
-GLuint create_program(GLuint vertex_shader, GLuint fragment_shader);
-
-void print_GL_version(GLFWwindow *window);
 GLFWwindow *setup_window(int width, int height, const char *title);
 
 int main()
@@ -55,6 +50,7 @@ int main()
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
 
 	// Compile shaders. The vertex shader is just pass-through
 	GLuint v_shader = compile_shader(vertex_shader, GL_VERTEX_SHADER);
@@ -77,6 +73,9 @@ int main()
    	glUniform2i(size_handle, width, height);
 
 	GLint cursor_handle = glGetUniformLocation(program, "mouse_position");
+
+	// Enable vsync
+	glfwSwapInterval(1);
 	
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
@@ -115,52 +114,4 @@ GLFWwindow *setup_window(int width, int height, const char *title)
     }
 	
 	return window;
-}
-
-void print_GL_version(GLFWwindow *window)
-{
-	int major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
-	int minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
-	int revision = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
-	printf("OpenGL version: %d.%d.%d\n", major, minor, revision);
-}
-
-GLuint compile_shader(const char *src, GLenum shader_type)
-{
-	// Compile the shader
- 	GLuint shader = glCreateShader(shader_type);
- 	glShaderSource(shader, 1, &src, NULL);
- 	glCompileShader(shader);
- 	// Check the result of the compilation
- 	GLint test;
- 	glGetShaderiv(shader, GL_COMPILE_STATUS, &test);
-	
- 	if(!test) {
-		printf("Shader compilation failed with this message:\n");
-		char compilation_log[512];
-		glGetShaderInfoLog(shader, sizeof(compilation_log), NULL, (GLchar *)&compilation_log);
- 		printf("%s", compilation_log);
- 		glfwTerminate();
- 		exit(-1);
- 	}
-
- 	return shader;
-}
-
-GLuint create_program(GLuint vertex_shader, GLuint fragment_shader)
-{
-    // Attach the above shader to a program
-  	GLuint shaderProgram = glCreateProgram();
-  	glAttachShader(shaderProgram, vertex_shader);
- 	glAttachShader(shaderProgram, fragment_shader);
-
- 	// Flag the shaders for deletion
- 	glDeleteShader(vertex_shader);
- 	glDeleteShader(fragment_shader);
-
- 	// Link and use the program
- 	glLinkProgram(shaderProgram);
- 	glUseProgram(shaderProgram);
- 
- 	return shaderProgram;
 }
