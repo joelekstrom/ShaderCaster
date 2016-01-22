@@ -2,6 +2,31 @@
 #import <stdio.h>
 #import <stdlib.h>
 
+char *read_file(char *file_name)
+{
+	char *buffer = 0;
+	long length;
+	FILE *f = fopen(file_name, "rb");
+
+	if (f) {
+		fseek(f, 0, SEEK_END);
+		length = ftell(f);
+		fseek(f, 0, SEEK_SET);
+		buffer = malloc(length);
+		if (buffer) {
+			fread (buffer, 1, length, f);
+		}
+		fclose (f);
+	}
+	
+	if (buffer == 0) {
+		printf("Error reading shader: %s", file_name);
+		exit(1);
+	}
+	
+	return buffer;
+}
+
 void print_GL_version(GLFWwindow *window)
 {
 	int major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
@@ -26,7 +51,7 @@ GLuint compile_shader(const char *src, GLenum shader_type)
 		glGetShaderInfoLog(shader, sizeof(compilation_log), NULL, (GLchar *)&compilation_log);
  		printf("%s", compilation_log);
  		glfwTerminate();
- 		exit(-1);
+ 		exit(1);
  	}
 
  	return shader;

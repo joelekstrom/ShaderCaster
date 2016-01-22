@@ -14,3 +14,5 @@ add_executable(raycaster main.c glutils.c)
 add_subdirectory(lib/glfw)
 include_directories(lib/glfw/include)
 target_link_libraries(raycaster glfw ${GLFW_LIBRARIES})
+
+file(COPY ${CMAKE_SOURCE_DIR}/default.frag DESTINATION ${CMAKE_BINARY_DIR})

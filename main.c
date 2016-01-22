@@ -16,21 +16,6 @@ const char *vertex_shader =
 "    gl_Position = in_vertex;"
 "}";
 
-
-const char *fragment_shader =
-"#version 150\n"
-"uniform vec2 mouse_position;"
-"uniform ivec2 buffer_size;"
-"out vec4 out_color;"
-
-"void main() {"
-	// Get mouse position in screen space (Y-axis is bottm up)
-"    vec2 mouse_sp = vec2(mouse_position.x, 1.0 - mouse_position.y);"
-"	 vec2 rel_fragcoord = vec2(gl_FragCoord) / buffer_size;"
-"    float mouse_distance = sqrt(pow(rel_fragcoord.y - mouse_sp.y, 2) + pow(mouse_sp.x - rel_fragcoord.x, 2));"
-"    out_color = vec4(1.0, rel_fragcoord.x, 1.0 - mouse_distance * 4.0, 1.0);"
-"}";
-
 GLFWwindow *setup_window(int width, int height, const char *title);
 
 int main()
@@ -51,11 +36,12 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-
 	// Compile shaders. The vertex shader is just pass-through
+	char *f_shader_source = read_file("default.frag");
 	GLuint v_shader = compile_shader(vertex_shader, GL_VERTEX_SHADER);
-	GLuint f_shader = compile_shader(fragment_shader, GL_FRAGMENT_SHADER);
+	GLuint f_shader = compile_shader((const char *)f_shader_source, GL_FRAGMENT_SHADER);
 	GLuint program = create_program(v_shader, f_shader);
+	free((void *)f_shader_source);
 
 	// Bind shader attributes with a vertex array object
 	GLuint vao;
