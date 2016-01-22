@@ -25,7 +25,11 @@ const char *fragment_shader =
 "out vec4 out_color;"
 
 "void main() {"
-"    out_color = vec4(1.0, gl_FragCoord.x / buffer_size.x, mouse_position.y, 1.0);"
+	// Get mouse position in screen space (Y-axis is bottm up)
+"    vec2 mouse_sp = vec2(mouse_position.x, 1.0 - mouse_position.y);"
+"	 vec2 rel_fragcoord = vec2(gl_FragCoord) / buffer_size;"
+"    float mouse_distance = sqrt(pow(rel_fragcoord.y - mouse_sp.y, 2) + pow(mouse_sp.x - rel_fragcoord.x, 2));"
+"    out_color = vec4(1.0, rel_fragcoord.x, 1.0 - mouse_distance * 4.0, 1.0);"
 "}";
 
 GLuint compile_shader(const char *src, GLenum shader_type);
@@ -79,7 +83,6 @@ int main()
     {
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
-		printf("%.2f\n", ypos);
 		glUniform2f(cursor_handle, xpos / 640, ypos / 480);
 		
 		// Draw our full screen quad
