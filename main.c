@@ -1,3 +1,4 @@
+#include <GL/gl3w.h>
 #import "glutils.h"
 #import <stdlib.h>
 
@@ -25,8 +26,6 @@ int main()
 	}
 
 	GLFWwindow *window = setup_window(640, 480, "Hellurr!!");
-	print_GL_version(window);
-    glfwMakeContextCurrent(window);
 
 	// Create Vertex buffer object, containing our 4 vertices.
 	// This allows us to draw a full screen quad, so we can
@@ -98,6 +97,21 @@ GLFWwindow *setup_window(int width, int height, const char *title)
         glfwTerminate();
         exit(1);
     }
+
+    glfwMakeContextCurrent(window);
+
+    if (gl3wInit()) {
+        printf("failed to initialize OpenGL\n");
+        return -1;
+    }
+
+    if (!gl3wIsSupported(3, 2)) {
+        printf("OpenGL 3.2 not supported\n");
+        return -1;
+    }
+
+    printf("OpenGL %s, GLSL %s\n", glGetString(GL_VERSION),
+           glGetString(GL_SHADING_LANGUAGE_VERSION));
 	
 	return window;
 }

@@ -8,7 +8,10 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_C_COMPILER_ID} STREQUAL "Cl
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -Wall -Wextra")
 endif()
 
-add_executable(raycaster main.c glutils.c)
+# Add GL3W
+include_directories(lib/gl3w/include)
+
+add_executable(raycaster main.c glutils.c lib/gl3w/gl3w.c)
 
 # Add GLFW
 add_subdirectory(lib/glfw)
