@@ -1,5 +1,5 @@
 #define GLFW_INCLUDE_GLCOREARB
-#include "glew.h"
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 GLuint compile_shader(const char *src, GLenum shader_type);

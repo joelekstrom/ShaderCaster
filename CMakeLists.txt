@@ -8,14 +8,15 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_C_COMPILER_ID} STREQUAL "Cl
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -Wall -Wextra")
 endif()
 
-# Add GL3W
-include_directories(lib/gl3w/include)
-
-add_executable(raycaster main.c glutils.c lib/gl3w/gl3w.c)
+add_executable(raycaster main.c glutils.c)
 
 # Add GLFW
 add_subdirectory(lib/glfw)
 include_directories(lib/glfw/include)
 target_link_libraries(raycaster glfw ${GLFW_LIBRARIES})
+
+find_package(GLEW REQUIRED)
+include_directories($(GLEW_INCLUDE_DIRS))
+target_link_libraries(raycaster ${GLEW_LIBRARIES})
 
 file(COPY ${CMAKE_SOURCE_DIR}/default.frag DESTINATION ${CMAKE_BINARY_DIR})

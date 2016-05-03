@@ -1,6 +1,5 @@
 #define GLEW_STATIC 
 
-#include "glew.h"
 #include "glutils.h"
 #include <stdlib.h>
 
