@@ -1,6 +1,6 @@
 #include "glutils.h"
-#import <stdio.h>
-#import <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 char *read_file(char *file_name)
 {
